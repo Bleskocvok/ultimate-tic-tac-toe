@@ -49,7 +49,7 @@ class Session:
         elif self.game.should_select():
             phase = "`Select board`"
         else:
-            phase = f"`Select square to place *{self.game.playing()}*`"
+            phase = f"`Select square to place` **{self.game.playing()}**"
         con =\
 f"""\
 *Playing: **{self.user.name}** (**{Box.X}**) vs. **{self.opponent.name}** (**{Box.O}**)*
