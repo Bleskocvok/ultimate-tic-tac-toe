@@ -161,7 +161,8 @@ class Small(AbstractBoard):
 class Board(AbstractBoard):
     UNSELECTED = (-1, -1)
     WALL_CH = '|'
-    WALL_FOCUS = '"'
+    WALL_FOCUS_L = '['
+    WALL_FOCUS_R = ']'
     LINE_CH = '-'
     LINE_FOCUS = '='
 
@@ -201,7 +202,7 @@ class Board(AbstractBoard):
         if xdiff > 1 or xdiff < 0:
             return Board.WALL_CH
         if y == self.selected[1]:
-            return Board.WALL_FOCUS
+            return Board.WALL_FOCUS_R if xdiff else Board.WALL_FOCUS_L
         return Board.WALL_CH
 
     def _hline(self, length: int, y: int) -> str:
@@ -222,18 +223,11 @@ class Board(AbstractBoard):
 
     def __str__(self) -> str:
         result = ''
-
-        l0 = self._str_line(0)
-        l1 = self._str_line(1)
-        l2 = self._str_line(2)
-
-        length = len(l0) // 3 - 1
-        result = result + self._hline(length, 0)
-        result = result + l0
-        result = result + self._hline(length, 1)
-        result = result + l1
-        result = result + self._hline(length, 2)
-        result = result + l2
+        lines = [self._str_line(i) for i in range(3)]
+        length = len(lines[0]) // 3 - 1
+        for i in range(3):
+            result = result + self._hline(length, i)
+            result = result + lines[i]
         result = result + self._hline(length, 3)
         return result
 
