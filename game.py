@@ -183,7 +183,7 @@ class Board(AbstractBoard):
         return str(small[idx])
 
     def _str_line(self, line) -> str:
-        result = []
+        result: List[str] = []
         def addw(w, ch):
             result.extend([*(w + ch)])
         for subline in range(3):
@@ -206,7 +206,6 @@ class Board(AbstractBoard):
         return Board.WALL_CH
 
     def _hline(self, length: int, y: int) -> str:
-        print(y)
         default = Board.LINE_CH * length + '\n'
         if self.selected == Board.UNSELECTED:
             return default
