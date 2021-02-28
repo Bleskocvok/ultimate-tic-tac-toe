@@ -15,6 +15,7 @@ def main():
                 bx = int(input())
                 by = int(input())
                 game.select((bx, by))
+                print(game.board())
             print(f"Board: {game.selected()}")
             print(f"Select square to place {game.playing()}")
             sx = int(input())

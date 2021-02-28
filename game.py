@@ -159,8 +159,15 @@ class Small(AbstractBoard):
 
 
 class Board(AbstractBoard):
-    def __init__(self, sub_boards: Optional[List[Small]]=None):
+    UNSELECTED = (-1, -1)
+    WALL_CH = '|'
+    WALL_FOCUS = '"'
+    LINE_CH = '-'
+    LINE_FOCUS = '='
+
+    def __init__(self, sub_boards: Optional[List[Small]]=None, selected=None):
         self._boards = [[Small() for _ in range(3)] for __ in range(3)]
+        self._selected: Coord = Board.UNSELECTED if selected is None else selected
         if sub_boards is not None:
             for i in range(len(sub_boards)):
                 self[i % 3, i // 3] = sub_boards[i]
@@ -174,26 +181,60 @@ class Board(AbstractBoard):
             return '/'
         return str(small[idx])
 
-    def _str_line(self, line):
+    def _str_line(self, line) -> str:
         result = []
+        def addw(w, ch):
+            result.extend([*(w + ch)])
         for subline in range(3):
-            wall = ''
-            for small in self._boards[line]:
-                result.extend([*wall])
+            for i, small in enumerate(self._boards[line]):
+                addw(self._wall(i, line), ' ')
                 for x in range(3):
-                    ch = ' ' + self._small_to_char(small, (x, subline))
+                    ch = self._small_to_char(small, (x, subline)) + ' '
                     result.extend([*ch])
-                wall = ' |'
-            result.append('\n')
+            addw(self._wall(3, line), '\n')
         return ''.join(result)
 
-    def __str__(self):
+    def _wall(self, x: int, y: int) -> str:
+        if self.selected == Board.UNSELECTED:
+            return Board.WALL_CH
+        xdiff = x - self.selected[0]
+        if xdiff > 1 or xdiff < 0:
+            return Board.WALL_CH
+        if y == self.selected[1]:
+            return Board.WALL_FOCUS
+        return Board.WALL_CH
+
+    def _hline(self, length: int, y: int) -> str:
+        print(y)
+        default = Board.LINE_CH * length + '\n'
+        if self.selected == Board.UNSELECTED:
+            return default
+        ydiff = y - self.selected[1]
+        if ydiff > 1 or ydiff < 0:
+            return default
         result = ''
-        for y in range(3):
-            line = self._str_line(y)
-            result = result + line
-            if y != 2:
-                result = result + '-' * (len(line)//3) + '\n'
+        for i in range(3):
+            ch = Board.LINE_CH
+            if self.selected[0] == i:
+                ch = Board.LINE_FOCUS
+            result = result + Board.LINE_CH + ((length - 4) // 3) * ch
+        return result + Board.LINE_CH + '\n'
+
+    def __str__(self) -> str:
+        result = ''
+
+        l0 = self._str_line(0)
+        l1 = self._str_line(1)
+        l2 = self._str_line(2)
+
+        length = len(l0) // 3 - 1
+        result = result + self._hline(length, 0)
+        result = result + l0
+        result = result + self._hline(length, 1)
+        result = result + l1
+        result = result + self._hline(length, 2)
+        result = result + l2
+        result = result + self._hline(length, 3)
         return result
 
     def __getitem__(self, idx: Coord) -> Small:
@@ -217,18 +258,28 @@ class Board(AbstractBoard):
     def _winning_symbol(self, sym: Any) -> bool:
         return sym in (State.X_WON, State.O_WON)
 
+    @property
+    def selected(self):
+        return self._selected
+
+    @selected.getter
+    def selected(self):
+        return self._selected
+
+    @selected.setter
+    def selected(self, val):
+        self._selected = val
+
 
 '''The main interface.
 '''
 class Game:
-    UNSELECTED = (-1, -1)
-
     def __init__(self, *, first=None, board=None, selected=None):
         self._board = Board() if board is None else board
         self._playing = Box.X if first is None else Box.O
         self.status = State.PLAYING
         self.placed = False
-        self._selected: Coord = Game.UNSELECTED if selected is None else selected
+        self._board.selected = Coord = Board.UNSELECTED if selected is None else selected
         # evaluate current state (if there is a winner already)
         self._evaluate()
 
@@ -238,27 +289,26 @@ class Game:
         self._playing = self._playing.invert()
         self.placed = False
         self._evaluate()
-        if not self._board.is_available(self._selected):
-            self._selected = Game.UNSELECTED
+        if not self._board.is_available(self._board.selected):
+            self._board.selected = Board.UNSELECTED
 
     def should_select(self) -> bool:
-        return self._selected == Game.UNSELECTED
+        return self._board.selected == Board.UNSELECTED
 
     def select(self, idx: Coord):
         if not self.should_select():
             raise GameError("Board has been already selected")
         if self._board[idx].status != State.PLAYING:
             raise GameError("Board is already full")
-        assert isinstance(idx, tuple)
-        self._selected = idx
+        self._board.selected = idx
 
     def place(self, idx: Coord):
         if self.should_select():
             raise GameError("Need to select board first")
-        if not self._board[self._selected].is_available(idx):
+        if not self._board[self._board.selected].is_available(idx):
             raise GameError("Square not available")
-        self._board.place(self._playing, self._selected, idx)
-        self._selected = idx
+        self._board.place(self._playing, self._board.selected, idx)
+        self._board.selected = idx
         self.placed = True
 
     def board(self) -> Board:
@@ -270,13 +320,13 @@ class Game:
     def available_boxes(self) -> List[List[bool]]:
         if self.should_select():
             raise GameError("No board selected")
-        return self._board[self._selected].get_available()
+        return self._board[self._board.selected].get_available()
 
     def playing(self) -> Box:
         return self._playing
 
     def selected(self) -> Coord:
-        return self._selected
+        return self._board.selected
 
     def state(self) -> State:
         return self.status
