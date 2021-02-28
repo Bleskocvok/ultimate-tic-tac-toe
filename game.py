@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 
 from typing import List, Tuple, Optional, Union, Any
@@ -123,7 +122,7 @@ class AbstractBoard:
 
 
 class Small(AbstractBoard):
-    def __init__(self, squares: Optional[Box]=None):
+    def __init__(self, squares: Optional[List[Box]]=None):
         line = [Box.EMPTY, Box.EMPTY, Box.EMPTY]
         self.grid = [line[:], line[:], line[:]]
         self._status = State.PLAYING
