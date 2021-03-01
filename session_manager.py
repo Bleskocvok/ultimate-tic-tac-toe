@@ -39,27 +39,37 @@ class Session:
         except GameError:
             pass
 
+    def game_over(self) -> bool:
+        return self.game.state() != State.PLAYING
+
     def view(self) -> str:
         player = self._get_player(self.game.playing())
+
         phase = ""
         if self.game.state() == State.X_WON:
-            phase = f"**{self._get_player(Box.X).id} - {Box.X} WON!**"
+            phase = f"**<@{self._get_player(Box.X).id}> ({Box.X}) WON!**"
         elif self.game.state() == State.O_WON:
-            phase = f"**{self._get_player(Box.O).id} - {Box.O} WON!**"
+            phase = f"**<@{self._get_player(Box.O).id}> ({Box.O}) WON!**"
+        elif self.game.state() == State.DRAW:
+            phase = f"**IT'S A DRAW! GAME OVER**"
         elif self.game.should_select():
             phase = "`Select board`"
         else:
-            phase = f"`Select square to place` **{self.game.playing()}**"
+            phase = f"`Select square to place:` **{self.game.playing()}**"
+
+        turn_msg = f"**Waiting for <@{player.id}>'s turn:**" if not self.game_over() else "Game ended"
+
         con =\
 f"""\
 *Playing: **{self.user.name}** (**{Box.X}**) vs. **{self.opponent.name}** (**{Box.O}**)*
 *-----------------------------------------------------*
 
-**Waiting for <@{player.id}>'s turn:**
-{phase}
 ```css
 {self.game.board()}
 ```
+{turn_msg}
+{phase}
+
 """
         return con
 
@@ -74,5 +84,5 @@ class SessionManager:
     def add(self, session: Session):
         self.sessions[session.message.id] = session
 
-    def remove(self, message):
-        del self.sessions[message.id]
+    def remove(self, session):
+        del self.sessions[session.message.id]
