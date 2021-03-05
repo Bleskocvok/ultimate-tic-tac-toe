@@ -10,15 +10,15 @@ from session_manager import *
 class Controls:
     # first row
     UP_LEFT     = "\N{north west arrow}"
-    UP          = "\N{upwards black arrow}"
+    UP          = "\N{up-pointing small red triangle}"
     UP_RIGHT    = "\N{north east arrow}"
     # second row
-    LEFT        = "\N{leftwards black arrow}"
+    LEFT        = "\N{black left-pointing triangle}"
     MIDDLE      = "\N{radio button}"
-    RIGHT       = "\N{black rightwards arrow}"
+    RIGHT       = "\N{black right-pointing triangle}"
     # third row
     DOWN_LEFT   = "\N{south west arrow}"
-    DOWN        = "\N{downwards black arrow}"
+    DOWN        = "\N{down-pointing small red triangle}"
     DOWN_RIGHT  = "\N{south east arrow}"
 
     LST = [
@@ -78,6 +78,7 @@ class UltraTicTacCog(commands.Cog):
         await reaction.remove(user)
 
         if session.game_over():
+            await session.message.clear_reactions()
             self.manager.remove(session)
 
     @commands.command(help='What are the rules?')
@@ -163,11 +164,12 @@ For more clarity on how the game works try:
 
 Player O chooses the middle square
 
--=======-
-[ . . . ]
-[ . O . ]
-[ . . . ]
--=======-
+---=======-
+. [ . . . ]
+. [ . O . ]
+. [ . . . ]
+---=======-
+. | . . . |
 
 
 3. Player X now has to place X in the middle board

@@ -2,8 +2,9 @@
 
 
 from discord.ext import commands
-import discord
 from typing import Dict
+import discord
+import random
 
 
 from game import *
@@ -14,7 +15,7 @@ class Session:
         self.message = message
         self.user = user
         self.opponent = opponent
-        self.game = Game()
+        self.game = Game(first=random.choice([Box.X, Box.O]))
 
     def _get_player(self, box: Box) -> discord.Member:
         return self.user if box == Box.X else self.opponent

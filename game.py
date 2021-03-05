@@ -269,7 +269,7 @@ class Board(AbstractBoard):
 class Game:
     def __init__(self, *, first=None, board=None, selected=None):
         self._board = Board() if board is None else board
-        self._playing = Box.X if first is None else Box.O
+        self._playing = Box.X if first is None else first
         self.status = State.PLAYING
         self.placed = False
         self._board.selected = Coord = Board.UNSELECTED if selected is None else selected
