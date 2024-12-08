@@ -77,6 +77,7 @@ class UltraTicTacCog(commands.Cog):
         # remove the reaction so it can be pressed again
         await reaction.remove(user)
 
+        # clear reactions after the game
         if session.game_over():
             await session.message.clear_reactions()
             self.manager.remove(session)

@@ -4,6 +4,7 @@
 from dotenv import load_dotenv
 from cog import *
 import os
+import asyncio
 
 
 def main():
@@ -11,9 +12,12 @@ def main():
     token = os.getenv("DISCORD_TOKEN")
     prefix = os.getenv("PREFIX", '!')
 
-    client = commands.Bot(command_prefix=prefix)
-    client.add_cog(UltraTicTacCog(client))
-    client.run(token)
+    intents = discord.Intents.default()
+    intents.message_content = True
+
+    client = commands.Bot(command_prefix=prefix, intents=intents)
+    asyncio.run(client.add_cog(UltraTicTacCog(client)))
+    asyncio.run(client.run(token))
 
 
 if __name__ == "__main__":
