@@ -1,5 +1,7 @@
 # ultimate-tic-tac-toe
 
+![testing badge](https://github.com/Bleskocvok/ultimate-tic-tac-toe/actions/workflows/tests.yml/badge.svg)
+
 ```sh
 git clone https://github.com/Bleskocvok/ultimate-tic-tac-toe
 cd ultimate-tic-tac-toe
