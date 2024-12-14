@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 
-from typing import List, Tuple, Optional, Union, Any
+from typing import List, Protocol, Tuple, Optional, Union, Any
 from enum import Enum
 
 
@@ -42,18 +42,18 @@ class Box(Enum):
         raise RuntimeError("Cannot invert EMPTY")
 
 
-class AbstractBoard:
+class AbstractBoard(Protocol):
     def is_available(self, idx: Coord) -> bool:
-        pass
+        ...
 
     def _winning_symbol(self, sym: Any) -> bool:
-        pass
+        ...
 
     def __getitem__(self, idx: Coord) -> Any:
-        pass
+        ...
 
     def __setitem__(self, idx: Coord, data: Any):
-        pass
+        ...
 
     def at(self, coord: Coord) -> Any:
         pass
@@ -244,6 +244,9 @@ class Board(AbstractBoard):
 
     def at(self, coord: Coord) -> State:
         return self[coord].status
+
+    def sub_board_at(self, idx: Coord) -> Small:
+        return self._boards[idx[1]][idx[1]]
 
     def is_available(self, idx: Coord) -> bool:
         return self[idx].status == State.PLAYING
