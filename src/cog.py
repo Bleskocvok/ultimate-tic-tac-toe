@@ -4,8 +4,8 @@
 import discord
 from discord.ext import commands
 
-from session_manager import *
-from src.game_info import GameInfo
+from .session_manager import *
+from .game_info import GameInfo
 
 
 class Controls:

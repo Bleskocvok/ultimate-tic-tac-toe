@@ -2,7 +2,7 @@
 
 
 from dotenv import load_dotenv
-from cog import *
+from .cog import *
 import os
 import asyncio
 

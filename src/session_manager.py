@@ -7,7 +7,7 @@ import discord
 import random
 
 
-from game import *
+from .game import *
 
 
 class Session:
