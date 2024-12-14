@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
 
+from typing import Tuple
 import unittest
 import sys
 
+# Necessary setup for imports to work
 import sys
 import os.path
 src_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(src_dir)
 
-from src.game import *
+from src.random_ai import RandomAi
+from src.game import Game, Board, Box, State, Small
 
 
 class TestGameplay(unittest.TestCase):
@@ -155,6 +158,23 @@ class TestGameplay(unittest.TestCase):
             elif cmd == 'won':
                 expected = State.X_WON if symbol == 'X' else State.O_WON
                 self.assertEqual(game.state(), expected)
+
+    def test_ai_placement(self):
+        coords = [(x, y) for y in range(3) for x in range(3)]
+
+        ai = RandomAi('X')
+        board = Board()
+        board.place(Box.O, (0, 0), (0, 0))
+
+        for free in coords:
+            board = Board()
+            board.selected = 0, 0
+            small = board[board.selected]
+            for coord in coords:
+                if coord != free:
+                    small[coord] = Box.O
+            picked = ai.pick_box(board)
+            self.assertEqual(picked, free)
 
 if __name__ == "__main__":
     unittest.main()
