@@ -49,7 +49,7 @@ class UltraTicTacCog(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         assert self.bot.user
-        print(f"Connected as {self.bot.user.name}")
+        print(f"Connected as {self.bot.user.name}", flush=True)
         await self.make_ai_plays.start()
 
     @tasks.loop(seconds=2)
