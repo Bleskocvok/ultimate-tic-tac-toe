@@ -1,7 +1,14 @@
 #!/usr/bin/env python3
 
 import unittest
-from game import *
+import sys
+
+import sys
+import os.path
+src_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(src_dir)
+
+from src.game import *
 
 
 class TestGameplay(unittest.TestCase):
@@ -120,6 +127,7 @@ class TestGameplay(unittest.TestCase):
             ('X', 'put',   0, 0),
             ('O', 'put',   0, 2),
             ('X', 'put',   0, 0),
+
             ('O', 'put',   2, 0),
             ('X', 'put',   2, 2),
             ('O', 'put',   2, 0),

@@ -38,9 +38,9 @@ class UltraTicTacCog(commands.Cog):
         self.bot = bot
         self.manager = SessionManager()
 
-    @commands.Cog.listener()
-    async def on_comman_error(self, ctx, error):
-        print(f"ERROR: {error}", flush=True)
+    # @commands.Cog.listener()
+    # async def on_command_error(self, ctx, error):
+    #     print(f"ERROR: {error}", flush=True)
 
     @commands.Cog.listener()
     async def on_ready(self):

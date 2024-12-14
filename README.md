@@ -19,7 +19,7 @@ DISCORD_TOKEN=XXXXX...XXX
 
 If all is setup correctly, the bot can be started by running the `main.py` file.
 ```sh
-python3 main.py
+python3 src/main.py
 ```
 
 In a channel where your bot has been added, simply type `!help` to see how to
