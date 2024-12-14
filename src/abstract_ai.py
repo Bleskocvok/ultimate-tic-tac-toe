@@ -1,6 +1,6 @@
 
 from typing import Protocol, Tuple
-from game import Board, Small
+from .game import Board
 
 
 class AbstractAi(Protocol):

@@ -12,12 +12,15 @@ def main():
     token = os.getenv("DISCORD_TOKEN")
     prefix = os.getenv("PREFIX", '!')
 
+    assert token
+
     intents = discord.Intents.default()
     intents.message_content = True
+    intents.reactions = True
 
     client = commands.Bot(command_prefix=prefix, intents=intents)
     asyncio.run(client.add_cog(UltraTicTacCog(client)))
-    asyncio.run(client.run(token))
+    client.run(token)
 
 
 if __name__ == "__main__":

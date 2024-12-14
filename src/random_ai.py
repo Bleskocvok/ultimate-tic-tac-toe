@@ -1,7 +1,7 @@
 
 from typing import Tuple
-from abstract_ai import AbstractAi
-from game import Board, Small
+from .abstract_ai import AbstractAi
+from .game import Board, Small
 
 import random
 

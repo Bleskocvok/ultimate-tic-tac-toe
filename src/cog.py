@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 
 
+from sys import stderr
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 
 from .session_manager import *
 from .game_info import GameInfo
+from .random_ai import RandomAi
 
 
 class Controls:
@@ -35,31 +37,54 @@ class Controls:
 
 
 class UltraTicTacCog(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.manager = SessionManager()
 
-    # @commands.Cog.listener()
-    # async def on_command_error(self, ctx, error):
-    #     print(f"ERROR: {error}", flush=True)
+    @commands.Cog.listener()
+    async def on_command_error(self, ctx, error):
+        print(f"ERROR: {error}", flush=True, file=stderr)
+        await ctx.send(f"`Error: {error}`")
 
     @commands.Cog.listener()
     async def on_ready(self):
+        assert self.bot.user
         print(f"Connected as {self.bot.user.name}")
+        await self.make_ai_plays.start()
+
+    @tasks.loop(seconds=2)
+    async def make_ai_plays(self):
+        assert self.bot.user
+        for _, ses in self.manager.sessions.items():
+            if ses.playing().id == self.bot.user.id:
+                game = ses.game
+                ai = RandomAi(game.playing().name)
+                x: int = 0
+                x: int = 0
+                if game.should_select():
+                    x, y = ai.pick_board(game.board())
+                else:
+                    x, y = ai.pick_box(game.board())
+                assert ses.input(self.bot.user.id, y * 3 + x)
+                await ses.message.edit(content=ses.view())
 
     @commands.command(help='')
-    async def start(self, ctx, opponent: discord.Member):
+    async def start(self, ctx, opponent: Optional[discord.User]):
+        assert self.bot.user
         msg = await ctx.send(
             "`Creating game...`"
         )
-        session = Session(msg, ctx.author, opponent)
+        opponent_user = opponent if opponent else self.bot.user
+        session = Session(msg, ctx.author, opponent_user)
         self.manager.add(session)
         for react in Controls.LST:
             await msg.add_reaction(f"{react}")
         await msg.edit(content=session.view())
 
     @commands.Cog.listener()
-    async def on_reaction_add(self, reaction, user):
+    async def on_reaction_add(self, reaction: discord.Reaction, user):
+        assert self.bot.user
+
         # it's this bot's reaction
         if self.bot.user.id == user.id:
             return
@@ -70,18 +95,13 @@ class UltraTicTacCog(commands.Cog):
             return
 
         # send the input (pressed reaction)
-        session.input(user, Controls.idx(reaction.emoji))
+        session.input(user.id, Controls.idx(reaction.emoji))
 
         # view the change
         await session.message.edit(content=session.view())
 
         # remove the reaction so it can be pressed again
         await reaction.remove(user)
-
-        # clear reactions after the game
-        if session.game_over():
-            await session.message.clear_reactions()
-            self.manager.remove(session)
 
     @commands.command(help='What are the rules?')
     async def rules(self, ctx):
