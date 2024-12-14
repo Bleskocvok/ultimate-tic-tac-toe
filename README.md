@@ -17,9 +17,9 @@ $ cat .env
 DISCORD_TOKEN=XXXXX...XXX
 ```
 
-If all is setup correctly, the bot can be started by running the `main.py` file.
+If all is setup correctly, the bot can be started by running the `bot.py` file.
 ```sh
-python3 src/main.py
+python3 src/bot.py
 ```
 
 In a channel where your bot has been added, simply type `!help` to see how to
