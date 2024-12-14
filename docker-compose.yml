@@ -1,0 +1,9 @@
+services:
+  ultimate-tic-tac-toe-bot:
+    image: ultimate-tic-tac-toe
+    container_name: ultimate-tic-tac-toe
+    build:
+      context: .
+      dockerfile: Dockerfile
+    stdin_open: true
+    tty: true
