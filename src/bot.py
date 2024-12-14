@@ -10,7 +10,7 @@ import asyncio
 def main():
     load_dotenv()
     token = os.getenv("DISCORD_TOKEN")
-    prefix = os.getenv("PREFIX", '!')
+    prefix = os.getenv("PREFIX", '#')
 
     assert token
 
