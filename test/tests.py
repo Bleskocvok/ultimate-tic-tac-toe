@@ -33,7 +33,6 @@ class TestGameplay(unittest.TestCase):
         self.assertEqual(game.board()[1, 1].status, State.PLAYING)
 
         b.place(Box.O, (1, 1), (2, 2))
-        game2 = Game(board=b)
         self.assertEqual(game.board()[1, 1].status, State.DRAW)
 
     def test_repr_win(self):
@@ -158,6 +157,7 @@ class TestGameplay(unittest.TestCase):
             elif cmd == 'won':
                 expected = State.X_WON if symbol == 'X' else State.O_WON
                 self.assertEqual(game.state(), expected)
+                self.assertEqual(game.playing(), Box.EMPTY)
 
     def test_ai_placement(self):
         coords = [(x, y) for y in range(3) for x in range(3)]
@@ -168,13 +168,17 @@ class TestGameplay(unittest.TestCase):
 
         for free in coords:
             board = Board()
-            board.selected = 0, 0
-            small = board[board.selected]
-            for coord in coords:
-                if coord != free:
-                    small[coord] = Box.O
-            picked = ai.pick_box(board)
-            self.assertEqual(picked, free)
+            for selected in coords:
+                board.selected = selected
+                small = board[board.selected]
+                for coord in coords:
+                    if coord != free:
+                        small[coord] = Box.O
+                picked = ai.pick_box(board)
+                self.assertTrue(board[board.selected].is_available(picked))
+                self.assertTrue(small.is_available(picked))
+                self.assertEqual(picked, free)
+
 
 if __name__ == "__main__":
     unittest.main()
