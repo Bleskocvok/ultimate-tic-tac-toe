@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 
-from typing import List, Protocol, Tuple, Optional, Union, Any
+from typing import List, Protocol, Tuple, Optional, Any
 from enum import Enum
 
 
@@ -246,7 +246,7 @@ class Board(AbstractBoard):
         return self[coord].status
 
     def sub_board_at(self, idx: Coord) -> Small:
-        return self._boards[idx[1]][idx[1]]
+        return self._boards[idx[1]][idx[0]]
 
     def is_available(self, idx: Coord) -> bool:
         return self[idx].status == State.PLAYING
@@ -275,7 +275,7 @@ class Game:
         self._playing = Box.X if first is None else first
         self.status = State.PLAYING
         self.placed = False
-        self._board.selected = Coord = Board.UNSELECTED if selected is None else selected
+        self._board.selected = Board.UNSELECTED if selected is None else selected
         # evaluate current state (if there is a winner already)
         self._evaluate()
 
@@ -302,7 +302,7 @@ class Game:
         if self.should_select():
             raise GameError("Need to select board first")
         if not self._board[self._board.selected].is_available(idx):
-            raise GameError("Square not available")
+            raise GameError(f"Square {idx} not available in board {self._board.selected}")
         self._board.place(self._playing, self._board.selected, idx)
         self._board.selected = idx
         self.placed = True
@@ -319,7 +319,7 @@ class Game:
         return self._board[self._board.selected].get_available()
 
     def playing(self) -> Box:
-        return self._playing
+        return self._playing if self._board.winning() == State.PLAYING else Box.EMPTY
 
     def selected(self) -> Coord:
         return self._board.selected

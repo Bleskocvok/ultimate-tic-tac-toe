@@ -56,7 +56,7 @@ class UltraTicTacCog(commands.Cog):
     async def make_ai_plays(self):
         assert self.bot.user
         for _, ses in self.manager.sessions.items():
-            if ses.playing().id == self.bot.user.id:
+            if ses.playing() is not None and ses.playing().id == self.bot.user.id:
                 game = ses.game
                 ai = RandomAi(game.playing().name)
                 x: int = 0
@@ -67,6 +67,19 @@ class UltraTicTacCog(commands.Cog):
                     x, y = ai.pick_box(game.board())
                 assert ses.input(self.bot.user.id, y * 3 + x)
                 await ses.message.edit(content=ses.view())
+
+    @commands.command(help='')
+    async def start_bot_vs_bot(self, ctx):
+        assert self.bot.user
+        msg = await ctx.send(
+            "`Creating game...`"
+        )
+        user = self.bot.user
+        session = Session(msg, user, user)
+        self.manager.add(session)
+        for react in Controls.LST:
+            await msg.add_reaction(f"{react}")
+        await msg.edit(content=session.view())
 
     @commands.command(help='')
     async def start(self, ctx, opponent: Optional[discord.User]):
