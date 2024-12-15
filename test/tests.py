@@ -98,7 +98,17 @@ class TestGameplay(unittest.TestCase):
         b = Board()
         b.place(Box.X, (1, 0), (2, 1))
         b.place(Box.O, (2, 1), (1, 0))
-        b[0, 1].status = State.DRAW
+
+        b.place(Box.X, (0, 1), (0, 0))
+        b.place(Box.O, (0, 1), (1, 0))
+        b.place(Box.X, (0, 1), (2, 0))
+        b.place(Box.O, (0, 1), (0, 1))
+        b.place(Box.X, (0, 1), (1, 1))
+        b.place(Box.O, (0, 1), (2, 1))
+        b.place(Box.O, (0, 1), (0, 2))
+        b.place(Box.X, (0, 1), (1, 2))
+        b.place(Box.O, (0, 1), (2, 2))
+        self.assertEqual(b[0, 1].status, State.DRAW)
 
         game = Game(board=b)
         self.assertFalse(all(map(all, game.available_boards())))

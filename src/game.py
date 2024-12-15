@@ -144,12 +144,8 @@ class Small(AbstractBoard):
         return self._status
 
     @status.getter
-    def status(self):
-        return self._status
-
-    @status.setter
-    def status(self, val):
-        self._status = val
+    def status(self) -> State:
+        return self.winning()
 
     def is_available(self, idx: Coord) -> bool:
         return self[idx] == Box.EMPTY
@@ -328,10 +324,5 @@ class Game:
         return self.status
 
     def _evaluate(self):
-        for y in range(3):
-            for x in range(3):
-                state = self._board[x, y].winning()
-                if state != State.PLAYING:
-                    self._board[x, y].status = state
         self.status = self._board.winning()
 
