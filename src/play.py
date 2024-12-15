@@ -2,10 +2,9 @@
 
 
 from typing import Optional, Protocol, Tuple
-from abstract_ai import AbstractAi
-from game import Game, Board, GameError, State
-
-from random_ai import RandomAi
+from .abstract_ai import AbstractAi
+from .game import Game, Board, GameError, State
+from .random_ai import RandomAi
 
 
 class Prompter(AbstractAi):
