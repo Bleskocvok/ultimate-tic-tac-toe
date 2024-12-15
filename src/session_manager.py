@@ -25,7 +25,9 @@ class Session:
         y = key // 3
         return (x, y)
 
-    def playing(self) -> discord.User | discord.ClientUser:
+    def playing(self) -> discord.User | discord.ClientUser | None:
+        if self.game.playing() == Box.EMPTY:
+            return None
         return self._get_player(self.game.playing())
 
     def input(self, person_id: int, key: int) -> bool:
@@ -51,7 +53,7 @@ class Session:
         return self.game.state() != State.PLAYING
 
     def view(self) -> str:
-        player = self._get_player(self.game.playing()).id
+        player = self._get_player(self.game.playing())
         player_x = self._get_player(Box.X).id
         player_o = self._get_player(Box.O).id
 
@@ -67,7 +69,7 @@ class Session:
         else:
             phase = f"`Select square to place:` **{self.game.playing()}**"
 
-        turn_msg = f"**Waiting for <@{player}>'s turn:**" if not self.game_over() else "Game ended"
+        turn_msg = f"**Waiting for <@{player.id}>'s turn:**" if not self.game_over() else "Game ended"
 
         opponent_name = self.opponent.name if self.opponent else "AI"
         con =\

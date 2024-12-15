@@ -11,13 +11,11 @@ class RandomAi(AbstractAi):
         super().__init__(symbol)
 
     def random_pick(self, thing: Board | Small) -> Tuple[int, int]:
-        avail = thing.get_available()
         free = []
-        for y in range(len(avail)):
-            for x in range(len(avail[y])):
-                if avail[y][x]:
+        for y in range(3):
+            for x in range(3):
+                if thing.is_available((x, y)):
                     free.append((x, y))
-
         assert free
         return random.choice(free)
 
