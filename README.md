@@ -1,5 +1,7 @@
 # ultimate-tic-tac-toe
 
+![Icon](icon.png)
+
 ![testing badge](https://github.com/Bleskocvok/ultimate-tic-tac-toe/actions/workflows/tests.yml/badge.svg)
 
 ## Running the code
