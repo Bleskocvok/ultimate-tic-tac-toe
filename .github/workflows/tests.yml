@@ -7,7 +7,7 @@ jobs:
     steps:
       - uses: actions/checkout@main
       - run: python3 test/tests.py
-jobs:
+
   static-analysis:
     steps:
       - uses: actions/checkout@main
