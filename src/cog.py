@@ -5,6 +5,7 @@ from sys import stderr
 from typing import Optional
 import discord
 from discord.ext import commands, tasks
+import asyncio
 
 from .session_manager import Session, SessionManager
 from .game_info import GameInfo
@@ -56,6 +57,7 @@ class UltraTicTacCog(commands.Cog):
     @tasks.loop(seconds=2)
     async def make_ai_plays(self):
         assert self.bot.user
+        over = []
         for _, ses in self.manager.sessions.items():
             if ses.is_playing(self.bot.user.id):
                 game = ses.game
@@ -68,6 +70,11 @@ class UltraTicTacCog(commands.Cog):
                     x, y = ai.pick_box(game.board())
                 assert ses.input(self.bot.user.id, y * 3 + x)
                 await ses.message.edit(content=ses.view())
+                if ses.game_over():
+                    over.append(ses)
+
+        for ses in over:
+            await self._cleanup(ses)
 
     @commands.command(help='')
     async def start_bot_vs_bot(self, ctx):
@@ -116,6 +123,23 @@ class UltraTicTacCog(commands.Cog):
 
         # remove the reaction so it can be pressed again
         await reaction.remove(user)
+
+        if session.game_over():
+            await self._cleanup(session)
+
+    async def _refetch_messaage(self, msg: discord.Message) -> discord.Message:
+        chnl = await self.bot.fetch_channel(msg.channel.id)
+        msg = await chnl.fetch_message(msg.id) # type: ignore
+        return msg
+
+    async def _cleanup(self, session: Session):
+        msg = await self._refetch_messaage(session.message)
+        removal = []
+        for react in msg.reactions:
+            async for user in react.users():
+                removal.append(react.remove(user))
+        await asyncio.gather(*removal)
+        self.manager.remove(session)
 
     @commands.command(help='What are the rules?')
     async def rules(self, ctx):
