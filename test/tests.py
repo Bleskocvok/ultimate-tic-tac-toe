@@ -11,7 +11,8 @@ src_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(src_dir)
 
 from src.random_ai import RandomAi
-from src.game import Game, Board, Box, State, Small
+from src.game import Game, Board, Box, State
+from src.small import Small
 
 
 class TestGameplay(unittest.TestCase):

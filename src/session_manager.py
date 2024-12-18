@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
 
-from typing import Dict
+from typing import Dict, Optional
 import discord
 import random
 
-
-from .game import *
+from .game import Game, State, GameError
+from .abstract_board import Box, Coord
 
 
 class Session:
@@ -29,6 +29,11 @@ class Session:
         if self.game.playing() == Box.EMPTY:
             return None
         return self._get_player(self.game.playing())
+
+    def is_playing(self, ident: int) -> bool:
+        if self.playing() is None:
+            return False
+        return self.playing().id == ident # type: ignore
 
     def input(self, person_id: int, key: int) -> bool:
 

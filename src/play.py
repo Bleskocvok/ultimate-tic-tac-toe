@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 
 
-from typing import Optional, Protocol, Tuple
+from typing import Tuple
+
+from .abstract_board import State
+from .board import Board
 from .abstract_ai import AbstractAi
-from .game import Game, Board, GameError, State
+from .game import Game, GameError
 from .random_ai import RandomAi
 
 

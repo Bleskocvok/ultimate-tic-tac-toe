@@ -2,10 +2,11 @@
 
 
 from sys import stderr
+from typing import Optional
 import discord
 from discord.ext import commands, tasks
 
-from .session_manager import *
+from .session_manager import Session, SessionManager
 from .game_info import GameInfo
 from .random_ai import RandomAi
 
@@ -56,7 +57,7 @@ class UltraTicTacCog(commands.Cog):
     async def make_ai_plays(self):
         assert self.bot.user
         for _, ses in self.manager.sessions.items():
-            if ses.playing() is not None and ses.playing().id == self.bot.user.id:
+            if ses.is_playing(self.bot.user.id):
                 game = ses.game
                 ai = RandomAi(game.playing().name)
                 x: int = 0
