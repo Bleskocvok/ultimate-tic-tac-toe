@@ -136,8 +136,9 @@ class UltraTicTacCog(commands.Cog):
         msg = await self._refetch_messaage(session.message)
         removal = []
         for react in msg.reactions:
-            async for user in react.users():
-                removal.append(react.remove(user))
+            if react.emoji in Controls.LST:
+                async for user in react.users():
+                    removal.append(react.remove(user))
         await asyncio.gather(*removal)
         self.manager.remove(session)
 
