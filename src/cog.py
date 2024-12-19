@@ -143,7 +143,8 @@ class UltraTicTacCog(commands.Cog):
 
     @commands.command(help='What are the rules?')
     async def rules(self, ctx):
-        await ctx.send(GameInfo.rules(f"{self.bot.command_prefix}example"))
+        await ctx.send(GameInfo.rules(f"{self.bot.command_prefix}example",
+                                      f"{self.bot.command_prefix}start_bot_vs_bot"))
 
     @commands.command(help='An example of one turn')
     async def example(self, ctx):

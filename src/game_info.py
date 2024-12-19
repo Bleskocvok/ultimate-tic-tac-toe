@@ -101,6 +101,11 @@ For more clarity on how the game works, try:
 
 {}
 
+Or
+
+{}
+
+to see a game of the bot playing against itself play out.
 ```
 """
 
@@ -112,5 +117,5 @@ class GameInfo:
         return EXAMPLE
 
     @staticmethod
-    def rules(example_cmd: str) -> str:
-        return RULES.format(example_cmd)
+    def rules(example_cmd: str, bot_vs_cmd: str) -> str:
+        return RULES.format(example_cmd, bot_vs_cmd)
