@@ -76,3 +76,7 @@ terminal to start the game.
 ```sh
 python3 -m src.play
 ```
+
+## Demo
+
+![demo recording](../demo/demo.gif?raw=true)
