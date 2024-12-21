@@ -52,7 +52,20 @@ class UltraTicTacCog(commands.Cog):
     async def on_ready(self):
         assert self.bot.user
         print(f"Connected as {self.bot.user.name}", flush=True)
-        await self.make_ai_plays.start()
+        a = self.make_ai_plays.start()
+        b = self.expire_old_sessions.start()
+        asyncio.gather(a, b)
+
+    @tasks.loop(seconds=1)
+    async def expire_old_sessions(self):
+        expired = []
+        for _, ses in self.manager.sessions.items():
+            if ses.expired():
+                expired.append(ses)
+
+        for ses in expired:
+            await ses.message.edit(content=ses.view())
+            await self._cleanup(ses)
 
     @tasks.loop(seconds=2)
     async def make_ai_plays(self):

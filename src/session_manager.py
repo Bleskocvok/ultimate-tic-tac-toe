@@ -4,18 +4,23 @@
 from typing import Dict, Optional
 import discord
 import random
+from datetime import datetime
 
 from .game import Game, State, GameError
 from .abstract_board import Box, Coord
 
 
 class Session:
+
+    EXPIRATION_SECONDS: int = 3600
+
     def __init__(self, message: discord.Message, user, opponent: discord.User
                                                          | discord.ClientUser):
         self.message = message
         self.user = user
         self.opponent = opponent
         self.game = Game(first=random.choice([Box.X, Box.O]))
+        self.last_action: datetime = datetime.now()
 
     def _get_player(self, box: Box) -> discord.User | discord.ClientUser:
         return self.user if box == Box.X else self.opponent
@@ -43,6 +48,8 @@ class Session:
         if person_id != self._get_player(self.game.playing()).id:
             return False
 
+        self.last_action = datetime.now()
+
         coord = self._key_to_coord(key)
         try:
             if self.game.should_select():
@@ -53,6 +60,11 @@ class Session:
         except GameError:
             return False
         return True
+
+    def expired(self) -> bool:
+        now = datetime.now()
+        diff = now - self.last_action
+        return diff.total_seconds() >= Session.EXPIRATION_SECONDS
 
     def game_over(self) -> bool:
         return self.game.state() != State.PLAYING
@@ -71,15 +83,16 @@ class Session:
             phase = f"**IT'S A DRAW! GAME OVER**"
         elif self.game.should_select():
             phase = "`Select board`"
+        elif self.expired():
+            phase = "`GAME EXPIRED`"
         else:
             phase = f"`Select square to place:` **{self.game.playing()}**"
 
         turn_msg = f"**Waiting for <@{player.id}>'s turn:**" if not self.game_over() else "Game ended"
 
-        opponent_name = self.opponent.name if self.opponent else "AI"
         con =\
 f"""\
-*Playing: **{self.user.name}** (**{Box.X}**) vs. **{opponent_name}** (**{Box.O}**)*
+*Playing: **{self.user.name}** (**{Box.X}**) vs. **{self.opponent.name}** (**{Box.O}**)*
 *-----------------------------------------------------*
 
 ```css
@@ -100,7 +113,7 @@ class SessionManager:
         return self.sessions.get(idx)
 
     def get(self, message: discord.Message) -> Optional[Session]:
-        return self.sessions[message.id]
+        return self.sessions.get(message.id)
 
     def add(self, session: Session):
         self.sessions[session.message.id] = session
