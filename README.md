@@ -79,4 +79,6 @@ python3 -m src.play
 
 ## Demo
 
+Sped up recording of a game vs. bot from the player's perspective.
+
 ![demo recording](../demo/demo.gif?raw=true)
